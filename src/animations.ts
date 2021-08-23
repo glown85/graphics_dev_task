@@ -95,18 +95,12 @@ import {  Mesh, Animation } from 'babylonjs';
  * @param node mesh to be aplied the animation
  * @param amplitude initial height of the object to be droped
  * @param duration max duration of the animation
- * @param bounceFactor how much of its velocity it retains after the bounce
  */
-export function applyEasingBouncing(node:Mesh, amplitude:number, duration:number, bounceFactor=0.7):void{
+export function applyEasingBouncing(node:Mesh, amplitude:number, duration:number):void{
 	//reset position and stop previously animation
    (node as any).basicGeometry.resetPosition();
 
    //#region error check
-   //check if the paramters are correct
-   if(bounceFactor >0.99 || bounceFactor<0){
-	   console.error("bounceFactor out of range");
-	   return;
-   }
    if(amplitude<=0 || duration<=0){
 	   console.error("invalid parameters");
 	   return;
@@ -173,8 +167,6 @@ export function applyBouncing(node:Mesh, height=10, duration:number, bounceFacto
 
 	const animation = new Animation("bounce", "position.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
 
-	console.log(node.position.y);
-
 	let currentHeight = height;
 	let frame = 0;
 
@@ -209,14 +201,16 @@ export function applyBouncing(node:Mesh, height=10, duration:number, bounceFacto
 		},
 	);
 	
-
+	//change the interpolation function
 	animation.floatInterpolateFunction = function (startValue, endValue, gradient) {
-	if(startValue < endValue){
-		return startValue + (endValue - startValue) * (1 - (1 - gradient) * (1 - gradient))
-	}
-	else{
-		return startValue + (endValue - startValue) * (gradient * gradient);
-	}
+		if(startValue < endValue){
+			//if its rising, use an easing in for the gradient
+			return startValue + (endValue - startValue) * (1 - (1 - gradient) * (1 - gradient))
+		}
+		else{
+			//if its dropping, use an easing out
+			return startValue + (endValue - startValue) * (gradient * gradient);
+		}
 	};
 
 	animation.setKeys(keyFrames);

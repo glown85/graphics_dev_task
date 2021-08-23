@@ -8,12 +8,18 @@ import { applyBouncing } from './animations';
  * to reuse functions
  */
 class BasicGeometry implements Geometry {
-    mesh!:Mesh;
-    div!:HTMLElement;
-    name!:string;
-    scene!:Scene;
-    position!:Vector3;
-    constructor(name:string, position:Vector3, scene:Scene){}
+    mesh:Mesh;
+    div:HTMLElement;
+    name:string;
+    scene:Scene;
+    position:Vector3;
+    constructor(name:string, position:Vector3, scene:Scene){
+        this.name = name;
+        this.position = position;
+        this.scene = scene;
+        this.mesh = new Mesh(name);
+        this.div = document.createElement('div');
+    }
 
     //#region transform methods 
     resetPosition():void{
@@ -267,18 +273,18 @@ export class Sphere extends BasicGeometry implements SphereGeometry{
         let dummyObj = MeshBuilder.CreateIcoSphere("dummy", {subdivisions: parseInt(value.toString())}, this.scene);
         this.scene.removeMesh(dummyObj);//this is ridiculous
 
-        var positions = dummyObj.getVerticesData(BABYLON.VertexBuffer.PositionKind);
-        var normals = dummyObj.getVerticesData(BABYLON.VertexBuffer.NormalKind);
-        var colors = dummyObj.getVerticesData(BABYLON.VertexBuffer.ColorKind);
-        var uvs = dummyObj.getVerticesData(BABYLON.VertexBuffer.UVKind);
-        var indices = dummyObj.getIndices();
+        let positions = dummyObj.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+        let normals = dummyObj.getVerticesData(BABYLON.VertexBuffer.NormalKind);
+        let colors = dummyObj.getVerticesData(BABYLON.VertexBuffer.ColorKind);
+        let uvs = dummyObj.getVerticesData(BABYLON.VertexBuffer.UVKind);
+        let indices = dummyObj.getIndices();
         
         //updating the exisiting obj with the dummyObj values
-        this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions!);
-        this.mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals!);
-        this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors!);
-        this.mesh.updateVerticesData(BABYLON.VertexBuffer.UVKind, uvs!);
-        this.mesh.updateIndices(indices!);
+        if(positions)this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, positions);
+        if(normals)this.mesh.updateVerticesData(BABYLON.VertexBuffer.NormalKind, normals);
+        if(colors)this.mesh.updateVerticesData(BABYLON.VertexBuffer.ColorKind, colors);
+        if(uvs)this.mesh.updateVerticesData(BABYLON.VertexBuffer.UVKind, uvs);
+        if(indices)this.mesh.updateIndices(indices);
 
     }
 
