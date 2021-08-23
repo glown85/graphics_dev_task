@@ -2,7 +2,7 @@ import { Mesh, Scene, Vector3, MeshBuilder, ActionManager,ExecuteCodeAction  } f
 
 export interface Geometry {
     mesh:Mesh;
-    div:HTMLElement | null ;
+    div:HTMLElement;
     name:string;
     scene:Scene;
     position:Vector3;

@@ -23,11 +23,11 @@ function prepareScene() {
 	const cylinder = new Cylinder("Cylinder", new Vector3(4,0,0), scene);
 
 	// Ground
-	let ground = MeshBuilder.CreateGround("ground", {width:10, height:6}, scene);
+	const ground = MeshBuilder.CreateGround("ground", {width:10, height:6}, scene);
 	// to prevent faces merging
 	ground.position.y = -0.01;
 
-    let mat = new StandardMaterial('red-mat', scene);
+    const mat = new StandardMaterial('red-mat', scene);
     mat.diffuseColor = BABYLON.Color3.Gray();
     mat.backFaceCulling = false;
     ground.material = mat;

@@ -1,6 +1,6 @@
 import { Mesh, Scene, Vector3, MeshBuilder, ActionManager,ExecuteCodeAction  } from 'babylonjs';
+import { Geometry, BoxGeometry, SphereGeometry, CylinderGeometry} from './geometry.types'
 import { applyBouncing } from './animations';
-import {Geometry, BoxGeometry, SphereGeometry, CylinderGeometry} from './geometry.types'
 
 
 /**
@@ -9,7 +9,7 @@ import {Geometry, BoxGeometry, SphereGeometry, CylinderGeometry} from './geometr
  */
 class BasicGeometry implements Geometry {
     mesh!:Mesh;
-    div!:HTMLElement | null ;
+    div!:HTMLElement;
     name!:string;
     scene!:Scene;
     position!:Vector3;
@@ -17,18 +17,17 @@ class BasicGeometry implements Geometry {
 
     //#region transform methods 
     resetPosition():void{
+        this.scene.stopAnimation(this.mesh);
         this.mesh.position.y = this.position.y + (this.mesh.scaling.y/2);
     }
 
     setWidth(width:number):void{
-        this.scene.stopAnimation(this.mesh);
         this.resetPosition();
 
         this.mesh.scaling.x = width;
     }
 
     setHeigth(height:number):void{
-        this.scene.stopAnimation(this.mesh);
         this.resetPosition();
 
         this.mesh.scaling.y = height;
@@ -36,14 +35,12 @@ class BasicGeometry implements Geometry {
     }
 
     setDepth(depth:number):void{
-        this.scene.stopAnimation(this.mesh);
         this.resetPosition();
 
         this.mesh.scaling.z = depth;
     }
 
     setDiameter(diameter:number):void{
-        this.scene.stopAnimation(this.mesh);
         this.resetPosition();
 
         this.mesh.scaling.x = diameter;
@@ -87,7 +84,7 @@ class BasicGeometry implements Geometry {
         range.max = ""+max;
         range.step= ""+step;
 
-        (range as any).oninput  = inputFunction;
+        (range as HTMLInputElement).oninput  = (e:Event) => inputFunction(e) ;
         modalContent.appendChild(label);
         modalContent.appendChild(range);
 
@@ -149,7 +146,7 @@ class BasicGeometry implements Geometry {
         btn.innerHTML = "bounce";
         let mesh = this.mesh;
         btn.onclick = function() {
-            applyBouncing(mesh,parseInt(amplitude.value),parseInt(duration.value),0.7);
+            applyBouncing(mesh,parseInt(amplitude.value),parseInt(duration.value));
         }
         modalContent.appendChild(btn);
 
@@ -264,7 +261,6 @@ export class Sphere extends BasicGeometry implements SphereGeometry{
      */
     setSubdivisions(value:number):void{
         //stop animation and reset its position
-        this.scene.stopAnimation(this.mesh);
         this.resetPosition();
 
         //creating a dummy to get its vertices data
@@ -291,6 +287,7 @@ export class Sphere extends BasicGeometry implements SphereGeometry{
      * (sphere scale goes to the center to the bottom of the mesh) 
      */
     resetPosition():void{
+        this.scene.stopAnimation(this.mesh);
         this.mesh.position.y = this.position.y + (this.mesh.scaling.y);
     }
 
@@ -306,8 +303,8 @@ export class Sphere extends BasicGeometry implements SphereGeometry{
         const header = this.createHeader(modalContent);
         modalContent.appendChild(header)
         
-        const diameter = this.createRangedInput("diameter", (e:any)=>this.setSize(e.target.value));
-        const subdivisions = this.createRangedInput("subdivisions", (e:any)=>this.setSubdivisions(e.target.value),1,10,1);
+        const diameter = this.createRangedInput("diameter", (e:any)=>this.setSize(parseFloat(e.target!.value)));
+        const subdivisions = this.createRangedInput("subdivisions", (e:any)=>this.setSubdivisions(parseFloat(e.target!.value)),1,10,1);
         
         modalContent.appendChild(diameter);
         modalContent.appendChild(subdivisions);
@@ -363,9 +360,9 @@ export class Box extends BasicGeometry implements BoxGeometry{
         modalContent.appendChild(header);    
         
         //ranged inputs
-        const height = this.createRangedInput("Height", (e:any)=>this.setHeigth(e.target.value));
-        const width = this.createRangedInput("Width", (e:any)=>this.setWidth(e.target.value));
-        const depth = this.createRangedInput("Depth", (e:any)=>this.setDepth(e.target.value));
+        const height = this.createRangedInput("Height", (e:any)=>this.setHeigth(parseFloat(e.target.value)));
+        const width  = this.createRangedInput("Width",  (e:any)=>this.setWidth(parseFloat(e.target.value)));
+        const depth  = this.createRangedInput("Depth",  (e:any)=>this.setDepth(parseFloat(e.target.value)));
 
         modalContent.appendChild(width);
         modalContent.appendChild(height);
@@ -410,6 +407,7 @@ export class Cylinder extends BasicGeometry implements CylinderGeometry{
     }
 
     resetPosition():void{
+        this.scene.stopAnimation(this.mesh);
         this.mesh.position.y = this.position.y + (this.mesh.scaling.y);
     }
 
@@ -432,8 +430,8 @@ export class Cylinder extends BasicGeometry implements CylinderGeometry{
         const header = this.createHeader(modalContent);
         modalContent.appendChild(header);   
         
-        const height = this.createRangedInput("height", (e:any)=>this.setHeigth(e.target.value));
-        const diameter = this.createRangedInput("diameter", (e:any)=>this.setDiameter(e.target.value));
+        const height = this.createRangedInput("height", (e:any)=>this.setHeigth(parseFloat(e.target.value)));
+        const diameter = this.createRangedInput("diameter", (e:any)=>this.setDiameter(parseFloat(e.target.value)));
         
         modalContent.appendChild(diameter);
         modalContent.appendChild(height);
